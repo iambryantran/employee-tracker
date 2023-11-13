@@ -1,4 +1,15 @@
 const inquirer = require('inquirer');
+const mysql = require('mysql2');
+
+const db = mysql.createConnection(
+    {
+        host: 'localhost',
+        user: 'root',
+        password: 'rootroot',
+        database: 'company_db'
+    },
+    console.log(`Connected to the company_db database.`)
+);
 
 // Main Menu Questions
 const mainMenu = [
@@ -140,16 +151,28 @@ const addEmployee = async () => {
 // ------------------------------------------------------ View Paths ------------------------------------------------------
 // View Departments
 const displayDepos = () => {
+    db.query('SELECT * FROM departments', function(err, result){
+        if (err) throw err;
+        console.log(result);
+    })
     startMenu();
 };
 
 // View Roles
 const displayRoles = () => {
+    db.query('SELECT * FROM roles', function(err, result){
+        if (err) throw err;
+        console.log(result);
+    })
     startMenu();
 };
 
 // View Employees
 const displayEmployees = () => {
+    db.query('SELECT * FROM employees', function(err, result){
+        if (err) throw err;
+        console.log(result);
+    })
     startMenu();
 };
 
