@@ -48,7 +48,7 @@ const rolePath = [
         type: 'list',
         message: 'Role Department: ',
         name: 'newRoleDepartment',
-        choices: ['Leadership', 'Operations', 'Tech', 'Finance'] // TODO: Dynamically bring in departments, just in case there is a new department
+        choices: ['1', '2', '3', '4'], // TODO: Dynamically bring in departments, just in case there is a new department
     }
 ];
 
@@ -68,15 +68,31 @@ const employeePath = [
         type: 'list',
         message: 'Employee Role: ',
         name: 'newEmployeeRole',
-        choices: [] // TODO: Dynamically bring in roles, just in case there is a new role
+        choices: ['1', '2', '3', '4'], // TODO: Dynamically bring in roles, just in case there is a new role
     },
     {
         type: 'list',
         message: "Employee's Manager: ",
         name: 'newEmployeeManager',
-        choices: [] // TODO: Dynamically bring in employee list, just in case there is a new employee
+        choices: ['1', '2', '3', '4'], // TODO: Dynamically bring in employee list, just in case there is a new employee
     }
 ];
+
+// Update Questions
+const updatePath = [
+    {
+        type: 'list',
+        message: 'Select Employee: ',
+        name: 'updateEmployee',
+        choices: [''],
+    },
+    {
+        type: 'list',
+        message: 'New Role: ',
+        name: 'updateRole',
+        choices: ['1', '2', '3', '4'],
+    }
+]
 
 // Main Menu
 const startMenu = async () => {
@@ -102,9 +118,9 @@ const startMenu = async () => {
             case 'Add Employee': 
                 addEmployee();
                 break;
-            // case 'Update Employee Role': 
-                // updateEmployeeRole(); 
-                // break;
+            case 'Update Employee Role': 
+                updateEmployeeRole(); 
+                break;
         }
     } catch (err) {
         console.log(err);
@@ -133,16 +149,21 @@ const addDepo = async () => {
 // Add Role
 const addRole = async () => {
     try {
+        
         const userResponse = await inquirer.prompt(rolePath);
         const { newRole, newRoleSalary, newRoleDepartment } = userResponse;
-        const sql = 'INSERT INTO roles (title, salary, department_id) VALUES ?';
-        const values = [[newRole], [newRoleSalary], [newRoleDepartment]];
+        const sql = 'INSERT INTO roles SET ?';
+        // (title, salary, department_id) VALUES 
+        const values = {
+            title: newRole, 
+            salary: parseInt(newRoleSalary), 
+            department_id: parseInt(newRoleDepartment)
+        };
 
-        db.query(sql, [values], function(err){
+        db.query(sql, values, function(err){
             if (err) throw err;
             console.log('Entry Added!')
         })
-
         startMenu();
     } catch (err) {
         console.log(err);
@@ -154,10 +175,16 @@ const addEmployee = async () => {
     try {
         const userResponse = await inquirer.prompt(employeePath);
         const { newFirstName, newLastName, newEmployeeRole, newEmployeeManager } = userResponse;
-        const sql = 'INSERT INTO roles (first_name, last_name, role_id, manager_id) VALUES ?';
-        const values = [[newFirstName], [newLastName], [newEmployeeRole], [newEmployeeManager]];
+        const sql = 'INSERT INTO employees SET ?';
+        // (first_name, last_name, role_id, manager_id) VALUES
+        const values = {
+            first_name: newFirstName, 
+            last_name: newLastName, 
+            role_id: parseInt(newEmployeeRole), 
+            manager_id: parseInt(newEmployeeManager)
+        };
 
-        db.query(sql, [values], function(err){
+        db.query(sql, values, function(err){
             if (err) throw err;
             console.log('Entry Added!')
         })
@@ -196,6 +223,28 @@ const displayEmployees = () => {
         console.table(result);
     })
     startMenu();
+};
+
+// ------------------------------------------------------ Update Paths ------------------------------------------------------
+// Update
+const updateEmployeeRole = async () => {
+
+    // Get all employees
+    // Build array of employee objects for inquirer (use map()) { name, value }
+    // Display employees to user via inquirer
+    // Get all roles
+    // Build array of role objects for inquirer (use map()) { name, value }
+    // write update to db
+
+
+    try {
+        const userResponse = await inquirer.prompt(updatePath);
+        const { updateEmployee, updateRole } = userResponse;
+        const sql = 'UPDATE employees SET role_id =  WHERE'; // Where employee(id) = 
+        const values = [[updateEmployee]];
+    } catch (err) {
+        console.log(err)
+    }
 };
 
 startMenu();
