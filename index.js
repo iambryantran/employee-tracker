@@ -117,7 +117,13 @@ const addDepo = async () => {
     try {
         const userResponse = await inquirer.prompt(depoPath);
         const { newDepo } = userResponse;
+        const sql = 'INSERT INTO departments (name) VALUES ?';
+        const values = [[newDepo]];
 
+        db.query(sql, [values], function(err){
+            if (err) throw err;
+            console.log('Entry Added!')
+        })
         startMenu();
     } catch (err) {
         console.log(err);
@@ -129,8 +135,13 @@ const addRole = async () => {
     try {
         const userResponse = await inquirer.prompt(rolePath);
         const { newRole, newRoleSalary, newRoleDepartment } = userResponse;
+        const sql = 'INSERT INTO roles (title, salary, department_id) VALUES ?';
+        const values = [[newRole], [newRoleSalary], [newRoleDepartment]];
 
-        // db.query('INSERT ')
+        db.query(sql, [values], function(err){
+            if (err) throw err;
+            console.log('Entry Added!')
+        })
 
         startMenu();
     } catch (err) {
@@ -143,7 +154,13 @@ const addEmployee = async () => {
     try {
         const userResponse = await inquirer.prompt(employeePath);
         const { newFirstName, newLastName, newEmployeeRole, newEmployeeManager } = userResponse;
+        const sql = 'INSERT INTO roles (first_name, last_name, role_id, manager_id) VALUES ?';
+        const values = [[newFirstName], [newLastName], [newEmployeeRole], [newEmployeeManager]];
 
+        db.query(sql, [values], function(err){
+            if (err) throw err;
+            console.log('Entry Added!')
+        })
         startMenu();
     } catch (err) {
         console.log(err);
@@ -153,7 +170,8 @@ const addEmployee = async () => {
 // ------------------------------------------------------ View Paths ------------------------------------------------------
 // View Departments
 const displayDepos = () => {
-    db.query('SELECT * FROM departments', function(err, result){
+    const sql = 'SELECT * FROM departments';
+    db.query(sql, function(err, result){
         if (err) throw err;
         console.table(result);
     })
@@ -162,7 +180,8 @@ const displayDepos = () => {
 
 // View Roles
 const displayRoles = () => {
-    db.query('SELECT * FROM roles', function(err, result){
+    const sql = 'SELECT * FROM roles';
+    db.query(sql, function(err, result){
         if (err) throw err;
         console.table(result);
     })
@@ -171,7 +190,8 @@ const displayRoles = () => {
 
 // View Employees
 const displayEmployees = () => {
-    db.query('SELECT * FROM employees', function(err, result){
+    const sql = 'SELECT * FROM employees';
+    db.query(sql, function(err, result){
         if (err) throw err;
         console.table(result);
     })
