@@ -155,7 +155,7 @@ const addEmployee = async () => {
 const displayDepos = () => {
     db.query('SELECT * FROM departments', function(err, result){
         if (err) throw err;
-        console.log(result);
+        console.table(result);
     })
     startMenu();
 };
@@ -173,7 +173,7 @@ const displayRoles = () => {
 const displayEmployees = () => {
     db.query('SELECT * FROM employees', function(err, result){
         if (err) throw err;
-        console.log(result);
+        console.table(result);
     })
     startMenu();
 };
