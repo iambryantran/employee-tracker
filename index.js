@@ -3,7 +3,7 @@ const mysql = require('mysql2');
 
 const db = mysql.createConnection(
     {
-        host: 'localhost',
+        host: '127.0.0.1',
         user: 'root',
         password: 'rootroot',
         database: 'company_db'
@@ -83,7 +83,7 @@ const startMenu = async () => {
     try {
         const userResponse = await inquirer.prompt(mainMenu);
         switch (userResponse.menu) {
-            case 'Exit': return;
+            case 'Exit': process.exit();
             case 'View All Departments': 
                 displayDepos();
                 break;
@@ -130,6 +130,8 @@ const addRole = async () => {
         const userResponse = await inquirer.prompt(rolePath);
         const { newRole, newRoleSalary, newRoleDepartment } = userResponse;
 
+        // db.query('INSERT ')
+
         startMenu();
     } catch (err) {
         console.log(err);
@@ -162,7 +164,7 @@ const displayDepos = () => {
 const displayRoles = () => {
     db.query('SELECT * FROM roles', function(err, result){
         if (err) throw err;
-        console.log(result);
+        console.table(result);
     })
     startMenu();
 };
