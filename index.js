@@ -78,21 +78,7 @@ const employeePath = [
     }
 ];
 
-// Update Questions
-const updatePath = [
-    {
-        type: 'list',
-        message: 'Select Employee: ',
-        name: 'updateEmployee',
-        choices: [''],
-    },
-    {
-        type: 'list',
-        message: 'New Role: ',
-        name: 'updateRole',
-        choices: ['1', '2', '3', '4'],
-    }
-]
+
 
 // Main Menu
 const startMenu = async () => {
@@ -136,7 +122,7 @@ const addDepo = async () => {
         const sql = 'INSERT INTO departments (name) VALUES ?';
         const values = [[newDepo]];
 
-        db.query(sql, [values], function(err){
+        db.query(sql, [values], (err) => {
             if (err) throw err;
             console.log('Entry Added!')
         })
@@ -160,7 +146,7 @@ const addRole = async () => {
             department_id: parseInt(newRoleDepartment)
         };
 
-        db.query(sql, values, function(err){
+        db.query(sql, values, (err) => {
             if (err) throw err;
             console.log('Entry Added!')
         })
@@ -184,7 +170,7 @@ const addEmployee = async () => {
             manager_id: parseInt(newEmployeeManager)
         };
 
-        db.query(sql, values, function(err){
+        db.query(sql, values, (err) => {
             if (err) throw err;
             console.log('Entry Added!')
         })
@@ -198,7 +184,7 @@ const addEmployee = async () => {
 // View Departments
 const displayDepos = () => {
     const sql = 'SELECT * FROM departments';
-    db.query(sql, function(err, result){
+    db.query(sql, (err, result) => {
         if (err) throw err;
         console.table(result);
     })
@@ -208,7 +194,7 @@ const displayDepos = () => {
 // View Roles
 const displayRoles = () => {
     const sql = 'SELECT * FROM roles';
-    db.query(sql, function(err, result){
+    db.query(sql, (err, result) => {
         if (err) throw err;
         console.table(result);
     })
@@ -218,7 +204,7 @@ const displayRoles = () => {
 // View Employees
 const displayEmployees = () => {
     const sql = 'SELECT * FROM employees';
-    db.query(sql, function(err, result){
+    db.query(sql, (err, result) => {
         if (err) throw err;
         console.table(result);
     })
@@ -226,22 +212,70 @@ const displayEmployees = () => {
 };
 
 // ------------------------------------------------------ Update Paths ------------------------------------------------------
-// Update
+// Update Employee
 const updateEmployeeRole = async () => {
 
-    // Get all employees
-    // Build array of employee objects for inquirer (use map()) { name, value }
-    // Display employees to user via inquirer
-    // Get all roles
-    // Build array of role objects for inquirer (use map()) { name, value }
-    // write update to db
-
-
+    
+    // Gets Employees and Roles
+    const getEmployees = async () => {
+        const sql = 'SELECT id, CONCAT(first_name, " ", last_name) AS name FROM employees';
+        return new Promise((resolve, reject) => {
+            db.query(sql, (err, res) => {
+                if (err) reject(err);
+                resolve(res);
+            })
+        })};
+        
+        const getRoles = async () => {
+            const sql = 'SELECT id, title FROM roles';
+            return new Promise((resolve, reject) => {
+                db.query(sql, (err, res) => {
+                    if (err) reject(err);
+                    resolve(res);
+                });
+            });
+    };
+        
     try {
+        // Get Employees and Roles
+        const employees = await getEmployees();
+        const roles = await getRoles();
+        
+        const employeeChoices = employees.map(emp => ({
+            name: emp.name,
+            value: emp.id
+        }));
+        
+        const roleChoices = roles.map(roles => ({
+            name: roles.name,
+            value: roles.id
+        }));
+
+        // Update Questions
+        const updatePath = [
+            {
+                type: 'list',
+                message: 'Select Employee: ',
+                name: 'updateEmployee',
+                choices: employeeChoices,
+            },
+            {
+                type: 'list',
+                message: 'New Role: ',
+                name: 'updateRole',
+                choices: roleChoices,
+            }
+        ];
+
         const userResponse = await inquirer.prompt(updatePath);
         const { updateEmployee, updateRole } = userResponse;
-        const sql = 'UPDATE employees SET role_id =  WHERE'; // Where employee(id) = 
-        const values = [[updateEmployee]];
+        const sql = 'UPDATE employees SET role_id = ? WHERE id = ?'; 
+        const values = [ updateRole, updateEmployee];
+        db.query(sql, values, (err) => {
+            if (err) throw err;
+            console.log('Entry Updated!');
+        })
+        startMenu();
     } catch (err) {
         console.log(err)
     }
