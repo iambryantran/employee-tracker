@@ -149,11 +149,11 @@ const addDepo = async () => {
 // Add Role
 const addRole = async () => {
     try {
-// (title, salary, department_id) VALUES 
-
+        
         const userResponse = await inquirer.prompt(rolePath);
         const { newRole, newRoleSalary, newRoleDepartment } = userResponse;
         const sql = 'INSERT INTO roles SET ?';
+        // (title, salary, department_id) VALUES 
         const values = {
             title: newRole, 
             salary: parseInt(newRoleSalary), 
@@ -164,7 +164,6 @@ const addRole = async () => {
             if (err) throw err;
             console.log('Entry Added!')
         })
-
         startMenu();
     } catch (err) {
         console.log(err);
@@ -176,10 +175,16 @@ const addEmployee = async () => {
     try {
         const userResponse = await inquirer.prompt(employeePath);
         const { newFirstName, newLastName, newEmployeeRole, newEmployeeManager } = userResponse;
-        const sql = 'INSERT INTO roles (first_name, last_name, role_id, manager_id) VALUES ?';
-        const values = [[newFirstName], [newLastName], [newEmployeeRole], [newEmployeeManager]];
+        const sql = 'INSERT INTO employees SET ?';
+        // (first_name, last_name, role_id, manager_id) VALUES
+        const values = {
+            first_name: newFirstName, 
+            last_name: newLastName, 
+            role_id: parseInt(newEmployeeRole), 
+            manager_id: parseInt(newEmployeeManager)
+        };
 
-        db.query(sql, [values], function(err){
+        db.query(sql, values, function(err){
             if (err) throw err;
             console.log('Entry Added!')
         })
