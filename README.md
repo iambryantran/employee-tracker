@@ -10,3 +10,4 @@ This application uses MySQL, Node.js, and Inquirer v8.2.4. Run the application w
 
 ## Video
 
+https://drive.google.com/file/d/14CQ7Gjrw-9asUsy1eXlaM_70U5NPTkUs/view
