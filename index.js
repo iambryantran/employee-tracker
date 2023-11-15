@@ -17,8 +17,8 @@ const mainMenu = [
         type: 'list',
         message: 'What would you like to do?',
         name: 'menu',
-        choices: ['View All Departments', 'Add Department', 'View All Roles', 'Add Role', 'View All Employees', 'Add Employee', 'Update Employee Role', 'Exit'],
-        // TODO: Consider adding 'Update Employee Manager', 'View Employees by Manager', 'View Employees by Department', 'Delete Departments, Roles, or Employees', 'View Total Utilized Budget'
+        choices: ['View All Departments', 'Add Department', 'View All Roles', 'Add Role', 'View All Employees', 'Add Employee', 'Update Employee Role', 'Update Employee Manager', 'Exit'],
+        // TODO: Consider adding 'View Employees by Manager', 'View Employees by Department', 'Delete Departments, Roles, or Employees', 'View Total Utilized Budget'
     }
 ];
 
@@ -106,6 +106,9 @@ const startMenu = async () => {
                 break;
             case 'Update Employee Role': 
                 updateEmployeeRole(); 
+                break;
+            case 'Update Employee Manager':
+                updateEmployeeManager();
                 break;
         }
     } catch (err) {
@@ -212,7 +215,7 @@ const displayEmployees = () => {
 };
 
 // ------------------------------------------------------ Update Paths ------------------------------------------------------
-// Update Employee
+// Update Employee Roles
 const updateEmployeeRole = async () => {
 
     
@@ -224,16 +227,17 @@ const updateEmployeeRole = async () => {
                 if (err) reject(err);
                 resolve(res);
             })
-        })};
+        })
+    };
         
-        const getRoles = async () => {
-            const sql = 'SELECT id, title FROM roles';
-            return new Promise((resolve, reject) => {
-                db.query(sql, (err, res) => {
-                    if (err) reject(err);
-                    resolve(res);
-                });
+    const getRoles = async () => {
+        const sql = 'SELECT id, title FROM roles';
+        return new Promise((resolve, reject) => {
+            db.query(sql, (err, res) => {
+                if (err) reject(err);
+                resolve(res);
             });
+        });
     };
         
     try {
@@ -281,4 +285,73 @@ const updateEmployeeRole = async () => {
     }
 };
 
+// Update Employee Managers
+const updateEmployeeManager = async () => {
+
+    
+    // Gets Employees and Roles
+    const getEmployees = async () => {
+        const sql = 'SELECT id, CONCAT(first_name, " ", last_name) AS name FROM employees';
+        return new Promise((resolve, reject) => {
+            db.query(sql, (err, res) => {
+                if (err) reject(err);
+                resolve(res);
+            })
+        })
+    };
+        
+    const getManagers = async () => {
+        const sql = 'SELECT id, CONCAT(first_name, " ", last_name) AS name FROM employees';
+        return new Promise((resolve, reject) => {
+            db.query(sql, (err, res) => {
+                if (err) reject(err);
+                resolve(res);
+            });
+        });
+    };
+        
+    try {
+        // Get All Employees twice, once 
+        const employees = await getEmployees();
+        const managers = await getManagers();
+        
+        const employeeChoices = employees.map(emp => ({
+            name: emp.name,
+            value: emp.id
+        }));
+        
+        const managerChoices = managers.map(managers => ({
+            name: managers.name,
+            value: managers.id
+        }));
+
+        // Update Questions
+        const updateManagerPath = [
+            {
+                type: 'list',
+                message: 'Select Employee: ',
+                name: 'updateEmployee',
+                choices: employeeChoices,
+            },
+            {
+                type: 'list',
+                message: 'New Manager: ',
+                name: 'updateManager',
+                choices: managerChoices,
+            }
+        ];
+
+        const userResponse = await inquirer.prompt(updateManagerPath);
+        const { updateEmployee, updateManager } = userResponse;
+        const sql = 'UPDATE employees SET manager_id = ? WHERE id = ?'; 
+        const values = [ updateManager, updateEmployee];
+        db.query(sql, values, (err) => {
+            if (err) throw err;
+            console.log('Entry Updated!');
+        })
+        startMenu();
+    } catch (err) {
+        console.log(err)
+    }
+};
 startMenu();
