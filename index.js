@@ -17,8 +17,8 @@ const mainMenu = [
         type: 'list',
         message: 'What would you like to do?',
         name: 'menu',
-        choices: ['View All Departments', 'Add Department', 'View All Roles', 'Add Role', 'View All Employees', 'Add Employee', 'Update Employee Role', 'Update Employee Manager', 'Exit'],
-        // TODO: Consider adding 'View Employees by Manager', 'View Employees by Department', 'Delete Departments, Roles, or Employees', 'View Total Utilized Budget'
+        choices: ['View All Departments', 'Add Department', 'View All Roles', 'Add Role', 'View All Employees', 'View Employees by Manager', 'View Employees by Department', 'Add Employee', 'Update Employee Role', 'Update Employee Manager', 'Exit'],
+        // TODO: Consider adding ', 'Delete Departments, Roles, or Employees', 'View Total Utilized Budget'
     }
 ];
 
@@ -94,6 +94,12 @@ const startMenu = async () => {
                 break;
             case 'View All Employees': 
                 displayEmployees();
+                break;
+            case 'View Employees by Manager':
+                displayEmployeesByManager();
+                break;
+            // case 'View Employees by Department':
+            //     displayEmployeesByDepartment();
                 break;
             case 'Add Department': 
                 addDepo();
@@ -213,6 +219,26 @@ const displayEmployees = () => {
     })
     startMenu();
 };
+
+// View Employees by Manager
+const displayEmployeesByManager = () => {
+    const sql = 'SELECT * FROM employees ORDER BY manager_id';
+    db.query(sql, (err, result) => {
+        if (err) throw err;
+        console.table(result);
+    })
+    startMenu();
+};
+
+// // View Employees by Department
+// const displayEmployeesByDepartment = () => {
+//     const sql = 'SELECT * FROM employees ORDER BY department_id';
+//     db.query(sql, (err, result) => {
+//         if (err) throw err;
+//         console.table(result);
+//     })
+//     startMenu();
+// };
 
 // ------------------------------------------------------ Update Paths ------------------------------------------------------
 // Update Employee Roles
