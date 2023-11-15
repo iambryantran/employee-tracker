@@ -17,8 +17,8 @@ const mainMenu = [
         type: 'list',
         message: 'What would you like to do?',
         name: 'menu',
-        choices: ['View All Departments', 'Add Department', 'View All Roles', 'Add Role', 'View All Employees', 'View Employees by Manager', 'View Employees by Department', 'Add Employee', 'Update Employee Role', 'Update Employee Manager', 'Exit'],
-        // TODO: Consider adding ', 'Delete Departments, Roles, or Employees', 'View Total Utilized Budget'
+        choices: ['View All Departments', 'Add Department', 'View All Roles', 'Add Role', 'View All Employees', 'View Employees by Manager', 'Add Employee', 'Update Employee Role', 'Update Employee Manager', 'Exit'],
+        // TODO: Consider adding 'View Employees by Department', 'Delete Departments, Roles, or Employees', 'View Total Utilized Budget'
     }
 ];
 
@@ -230,7 +230,7 @@ const displayEmployeesByManager = () => {
     startMenu();
 };
 
-// // View Employees by Department
+// View Employees by Department
 // const displayEmployeesByDepartment = () => {
 //     const sql = 'SELECT * FROM employees ORDER BY department_id';
 //     db.query(sql, (err, result) => {
@@ -241,36 +241,34 @@ const displayEmployeesByManager = () => {
 // };
 
 // ------------------------------------------------------ Update Paths ------------------------------------------------------
+// Gets Employees 
+const getEmployees = async () => {
+    const sql = 'SELECT id, CONCAT(first_name, " ", last_name) AS name FROM employees';
+    return new Promise((resolve, reject) => {
+        db.query(sql, (err, res) => {
+            if (err) reject(err);
+            resolve(res);
+        })
+    })
+};
+// Gets Roles
+const getRoles = async () => {
+    const sql = 'SELECT id, title FROM roles';
+    return new Promise((resolve, reject) => {
+        db.query(sql, (err, res) => {
+            if (err) reject(err);
+            resolve(res);
+        });
+    });
+};
 // Update Employee Roles
 const updateEmployeeRole = async () => {
-
-    
-    // Gets Employees and Roles
-    const getEmployees = async () => {
-        const sql = 'SELECT id, CONCAT(first_name, " ", last_name) AS name FROM employees';
-        return new Promise((resolve, reject) => {
-            db.query(sql, (err, res) => {
-                if (err) reject(err);
-                resolve(res);
-            })
-        })
-    };
-        
-    const getRoles = async () => {
-        const sql = 'SELECT id, title FROM roles';
-        return new Promise((resolve, reject) => {
-            db.query(sql, (err, res) => {
-                if (err) reject(err);
-                resolve(res);
-            });
-        });
-    };
-        
     try {
         // Get Employees and Roles
         const employees = await getEmployees();
         const roles = await getRoles();
         
+        // Create Choices for Questions
         const employeeChoices = employees.map(emp => ({
             name: emp.name,
             value: emp.id
@@ -280,7 +278,7 @@ const updateEmployeeRole = async () => {
             name: roles.name,
             value: roles.id
         }));
-
+        
         // Update Questions
         const updatePath = [
             {
@@ -296,7 +294,7 @@ const updateEmployeeRole = async () => {
                 choices: roleChoices,
             }
         ];
-
+        
         const userResponse = await inquirer.prompt(updatePath);
         const { updateEmployee, updateRole } = userResponse;
         const sql = 'UPDATE employees SET role_id = ? WHERE id = ?'; 
@@ -313,33 +311,11 @@ const updateEmployeeRole = async () => {
 
 // Update Employee Managers
 const updateEmployeeManager = async () => {
-
     
-    // Gets Employees and Roles
-    const getEmployees = async () => {
-        const sql = 'SELECT id, CONCAT(first_name, " ", last_name) AS name FROM employees';
-        return new Promise((resolve, reject) => {
-            db.query(sql, (err, res) => {
-                if (err) reject(err);
-                resolve(res);
-            })
-        })
-    };
-        
-    const getManagers = async () => {
-        const sql = 'SELECT id, CONCAT(first_name, " ", last_name) AS name FROM employees';
-        return new Promise((resolve, reject) => {
-            db.query(sql, (err, res) => {
-                if (err) reject(err);
-                resolve(res);
-            });
-        });
-    };
-        
     try {
-        // Get All Employees twice, once 
+        // Get All Employees twice
         const employees = await getEmployees();
-        const managers = await getManagers();
+        const managers = await getEmployees();
         
         const employeeChoices = employees.map(emp => ({
             name: emp.name,
