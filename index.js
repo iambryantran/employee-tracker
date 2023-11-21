@@ -100,7 +100,7 @@ const startMenu = async () => {
                 break;
             // case 'View Employees by Department':
             //     displayEmployeesByDepartment();
-                break;
+            //     break;
             case 'Add Department': 
                 addDepo();
                 break;
